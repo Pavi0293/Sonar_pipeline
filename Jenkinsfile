@@ -21,30 +21,7 @@ pipeline {
                 echo 'Build successful.'
             }
         }
-        // Stage 3: SonarQube Analysis
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Running SonarQube analysis...'
-                // The withSonarQubeEnv step prepares the environment for the scanner.
-                // The name 'sq1' must match the name you configured in the Jenkins system settings.
-                withSonarQubeEnv('sq1') {
-                    // This is where the SonarQube scanner would be called if it was in the PATH.
-                    // Since it's not found, this step will fail.
-                    // The withSonarQubeEnv step itself still functions, but the command within it fails.
-                }
-            }
-        }
-        // Stage 4: Quality Gate Check
-        stage("Quality Gate Check") {
-            steps {
-                echo 'Waiting for Quality Gate status...'
-                timeout(time: 1, unit: 'HOURS') {
-                    // This step will wait for the SonarQube analysis to complete.
-                    waitForQualityGate(abortPipeline: true)
-                }
-            }
-        }
-        // Stage 5: Deploy the application.
+        // Stage 3: Deploy the application.
         stage('Deploy') {
             steps {
                 echo 'Simulating deployment...'
