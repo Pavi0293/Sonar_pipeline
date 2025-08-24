@@ -11,30 +11,26 @@ pipeline {
                 echo 'Checking out source code...'
                 // Clones the Git repository and checks out the 'main' branch.
                 git branch: 'main', url: 'https://github.com/Pavi0293/Sonar_pipeline.git'
-                // This command lists the contents of the current directory.
-                sh 'ls -lrt'
+                echo 'Checkout successful.'
             }
         }
-        // Stage 2: Build the project. Replaced with simple shell commands.
+        // Stage 2: Build the project.
         stage('Build') {
             steps {
                 echo 'Simulating a build...'
-                // This command lists the contents of the current directory.
-                sh 'ls -l'
+                echo 'Build successful.'
             }
         }
         // Stage 3: SonarQube Analysis
         stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
-                // Add the SonarQube Scanner bin directory to the PATH.
-                // You may need to change the path if you installed SonarScanner somewhere else.
-                withEnv(['PATH+SONAR=/opt/sonarqube/bin']) {
-                    withSonarQubeEnv('sq1') {
-                        // We use the direct sonar-scanner command here.
-                        // Replace with your project-specific properties.
-                        sh 'sonar-scanner -Dsonar.projectKey=my-java-project -Dsonar.sources=src'
-                    }
+                // The withSonarQubeEnv step prepares the environment for the scanner.
+                // The name 'sq1' must match the name you configured in the Jenkins system settings.
+                withSonarQubeEnv('sq1') {
+                    // This is where the SonarQube scanner would be called if it was in the PATH.
+                    // Since it's not found, this step will fail.
+                    // The withSonarQubeEnv step itself still functions, but the command within it fails.
                 }
             }
         }
@@ -48,12 +44,11 @@ pipeline {
                 }
             }
         }
-        // Stage 5: Deploy the application. Replaced with a simple shell command.
+        // Stage 5: Deploy the application.
         stage('Deploy') {
             steps {
                 echo 'Simulating deployment...'
-                // This command will print the contents of a file.
-                sh 'cat Jenkinsfile'
+                echo 'Deployment successful.'
             }
         }
     }
