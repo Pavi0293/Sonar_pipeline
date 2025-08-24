@@ -3,12 +3,8 @@ pipeline {
     // This tells Jenkins to run the pipeline on any available agent.
     agent any
 
-    // This section defines the tools available to your pipeline.
-    // The sonarScanner tool is used to run the analysis.
-    tools {
-        // Updated tool name to 'sonarRunner' to be compatible with older Jenkins plugins.
-        sonarRunner 'SonarQube Scanner'
-    }
+    // We are no longer using the `tools` block. Instead, we will
+    // install the SonarQube Scanner directly on the agent.
 
     // Stages define the steps of your pipeline.
     stages {
