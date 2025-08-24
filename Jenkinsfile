@@ -6,7 +6,8 @@ pipeline {
     // This section defines the tools available to your pipeline.
     // The sonarScanner tool is used to run the analysis.
     tools {
-        sonarScanner 'SonarQube Scanner'
+        // Updated tool name to 'sonarRunner' to be compatible with older Jenkins plugins.
+        sonarRunner 'SonarQube Scanner'
     }
 
     // Stages define the steps of your pipeline.
