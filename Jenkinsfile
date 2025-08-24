@@ -4,27 +4,9 @@ pipeline {
     agent any
 
     // This section defines the tools available to your pipeline.
-    // The older version of the plugin uses 'hudson.plugins.sonar.SonarRunnerInstallation'
-    // instead of 'sonarScanner'.
+    // The sonarScanner tool is used to run the analysis.
     tools {
-        // This tool name must match the one configured in Global Tool Configuration
-        // (e.g., if you named the SonarQube Scanner "SonarScanner")
-        maven 'Maven' // Example Maven tool
-    }
-
-    // Define environment variables that can be used throughout the pipeline.
-    environment {
-        // Specify the directory where the application will be deployed.
-        // You can change this to your desired path.
-        DEPLOY_PATH = '/opt/my-app'
-
-        // This is a placeholder for the server IP.
-        // If your deployment server is different, you'll need to configure SSH access.
-        REMOTE_SERVER = 'localhost'
-
-        // Name of the JAR file to be deployed.
-        // This assumes your Maven build creates a JAR.
-        JAR_FILE = 'target/my-app-1.0-SNAPSHOT.jar'
+        sonarScanner 'SonarQube Scanner'
     }
 
     // Stages define the steps of your pipeline.
@@ -37,34 +19,43 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Pavi0293/Sonar_pipeline.git'
             }
         }
+        // Stage 2: Build the project. Replaced with simple shell commands.
         stage('Build') {
             steps {
-                echo 'Building the project with Maven...'
-                // Use the configured Maven tool to clean and package the project.
-                // This will create the JAR file.
-                sh 'mvn clean package'
+                echo 'Simulating a build...'
+                // This command lists the contents of the current directory.
+                sh 'ls -l'
             }
         }
+        // Stage 3: SonarQube Analysis
         stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
                 // The withSonarQubeEnv step prepares the environment for the scanner.
                 // The name 'sq1' must match the name you configured in the Jenkins system settings.
-                // We use the `sonar:sonar` goal for Maven to perform the analysis.
-                // The properties are passed as -D flags.
                 withSonarQubeEnv('sq1') {
-                    sh "mvn sonar:sonar -Dsonar.projectKey=my-java-project -Dsonar.sources=src"
+                    // We use the direct sonar-scanner command here.
+                    // Replace with your project-specific properties.
+                    sh 'sonar-scanner -Dsonar.projectKey=my-java-project -Dsonar.sources=src'
                 }
             }
         }
+        // Stage 4: Quality Gate Check
         stage("Quality Gate Check") {
             steps {
                 echo 'Waiting for Quality Gate status...'
                 timeout(time: 1, unit: 'HOURS') {
-                    // The waitForQualityGate() step now takes the required 'abortPipeline' parameter.
-                    // Setting it to true will cause the pipeline to fail if the quality gate is not 'OK'.
+                    // This step will wait for the SonarQube analysis to complete.
                     waitForQualityGate(abortPipeline: true)
                 }
+            }
+        }
+        // Stage 5: Deploy the application. Replaced with a simple shell command.
+        stage('Deploy') {
+            steps {
+                echo 'Simulating deployment...'
+                // This command will print the contents of a file.
+                sh 'cat some_file.txt'
             }
         }
     }
