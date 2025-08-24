@@ -3,9 +3,6 @@ pipeline {
     // This tells Jenkins to run the pipeline on any available agent.
     agent any
 
-    // We are no longer using the `tools` block. Instead, we will
-    // install the SonarQube Scanner directly on the agent.
-
     // Stages define the steps of your pipeline.
     stages {
         // Stage 1: Checkout the source code from the repository.
@@ -28,12 +25,14 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
-                // The withSonarQubeEnv step prepares the environment for the scanner.
-                // The name 'sq1' must match the name you configured in the Jenkins system settings.
-                withSonarQubeEnv('sq1') {
-                    // We use the direct sonar-scanner command here.
-                    // Replace with your project-specific properties.
-                    sh 'sonar-scanner -Dsonar.projectKey=my-java-project -Dsonar.sources=src'
+                // Add the SonarQube Scanner bin directory to the PATH.
+                // You may need to change the path if you installed SonarScanner somewhere else.
+                withEnv(['PATH+SONAR=/opt/sonarqube/bin']) {
+                    withSonarQubeEnv('sq1') {
+                        // We use the direct sonar-scanner command here.
+                        // Replace with your project-specific properties.
+                        sh 'sonar-scanner -Dsonar.projectKey=my-java-project -Dsonar.sources=src'
+                    }
                 }
             }
         }
@@ -52,7 +51,7 @@ pipeline {
             steps {
                 echo 'Simulating deployment...'
                 // This command will print the contents of a file.
-                sh 'cat some_file.txt'
+                sh 'cat Jenkinsfile'
             }
         }
     }
