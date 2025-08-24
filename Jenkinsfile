@@ -9,8 +9,10 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out source code...'
-                // Clones the Git repository and checks out the 'main' branch.
-                git branch: 'main', url: 'https://github.com/Pavi0293/Sonar_pipeline.git'
+                // Clones the Git repository. Jenkins will automatically checkout the default branch.
+                git url: 'https://github.com/Pavi0293/Sonar_pipeline.git'
+                // This command lists the contents of the current directory.
+                sh 'ls -lrt'
             }
         }
         // Stage 2: Build the project. Replaced with simple shell commands.
