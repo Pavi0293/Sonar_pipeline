@@ -2,21 +2,26 @@
 pipeline {
     // This tells Jenkins to run the pipeline on any available agent.
     agent any
-   tools {
+
+    // This section defines the tools available to your pipeline.
+    // The older version of the plugin uses 'hudson.plugins.sonar.SonarRunnerInstallation'
+    // instead of 'sonarScanner'.
+    tools {
         // This tool name must match the one configured in Global Tool Configuration
         // (e.g., if you named the SonarQube Scanner "SonarScanner")
-        sonarScanner 'SonarQube Scanner' 
+        maven 'Maven 3.8.1' // Example Maven tool
     }
+
     // Define environment variables that can be used throughout the pipeline.
     environment {
         // Specify the directory where the application will be deployed.
         // You can change this to your desired path.
         DEPLOY_PATH = '/opt/my-app'
-        
+
         // This is a placeholder for the server IP.
         // If your deployment server is different, you'll need to configure SSH access.
         REMOTE_SERVER = 'localhost'
-        
+
         // Name of the JAR file to be deployed.
         // This assumes your Maven build creates a JAR.
         JAR_FILE = 'target/my-app-1.0-SNAPSHOT.jar'
@@ -32,25 +37,33 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Pavi0293/Sonar_pipeline.git'
             }
         }
-         stage('Build') {
+        stage('Build') {
             steps {
-                // Your build steps (e.g., `sh 'mvn clean install'`)
+                echo 'Building the project with Maven...'
+                // Use the configured Maven tool to clean and package the project.
+                // This will create the JAR file.
+                sh 'mvn clean package'
             }
         }
-         stage('SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
-                // The name 'sq1' must match the name you configured in the Jenkins system settings
-                withSonarQubeEnv('sq1') { 
-                    // Replace with your project-specific properties
-                    sh 'sonar-scanner -Dsonar.projectKey=my-java-project -Dsonar.sources=src'
+                echo 'Running SonarQube analysis...'
+                // The withSonarQubeEnv step prepares the environment for the scanner.
+                // The name 'sq1' must match the name you configured in the Jenkins system settings.
+                // We use the `sonar:sonar` goal for Maven to perform the analysis.
+                // The properties are passed as -D flags.
+                withSonarQubeEnv('sq1') {
+                    sh "mvn sonar:sonar -Dsonar.projectKey=my-java-project -Dsonar.sources=src"
                 }
             }
         }
         stage("Quality Gate Check") {
             steps {
+                echo 'Waiting for Quality Gate status...'
                 timeout(time: 1, unit: 'HOURS') {
-                    // This step will wait for the SonarQube analysis to complete
-                    waitForQualityGate()
+                    // The waitForQualityGate() step now takes the required 'abortPipeline' parameter.
+                    // Setting it to true will cause the pipeline to fail if the quality gate is not 'OK'.
+                    waitForQualityGate(abortPipeline: true)
                 }
             }
         }
@@ -62,7 +75,7 @@ pipeline {
             echo 'Pipeline finished.'
             // You can add cleanup or notification steps here.
         }
-        
+
         failure {
             echo 'Pipeline failed. Check logs for details.'
         }
