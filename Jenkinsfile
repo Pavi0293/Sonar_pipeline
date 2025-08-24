@@ -9,7 +9,7 @@ pipeline {
     tools {
         // This tool name must match the one configured in Global Tool Configuration
         // (e.g., if you named the SonarQube Scanner "SonarScanner")
-        maven 'Maven 3.8.1' // Example Maven tool
+        maven 'Maven' // Example Maven tool
     }
 
     // Define environment variables that can be used throughout the pipeline.
